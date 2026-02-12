@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculadora de Espectro Sísmico FPGY según NEC-15">
+    <meta name="theme-color" content="#1e40af">
+    <title>Calculadora Sísmica FPGY | NEC-15</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="img/icon-192.png">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Chart.js para gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- jsPDF para exportar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.nuxtjs.org/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="earthquake-icon">🏗️</span>
+                    Calculadora Sísmica FPGY
+                </h1>
+                <div class="header-actions">
+                    <button id="themeToggle" class="btn-icon" title="Cambiar tema">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button id="helpBtn" class="btn-icon" title="Ayuda">
+                        <span>❓</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="input">
+                    <span>📝</span> Entrada de Datos
+                </button>
+                <button class="tab-btn" data-tab="results">
+                    <span>📊</span> Resultados
+                </button>
+                <button class="tab-btn" data-tab="graphs">
+                    <span>📈</span> Gráficas
+                </button>
+                <button class="tab-btn" data-tab="formulas">
+                    <span>🔢</span> Fórmulas
+                </button>
+            </div>
+
+            <!-- Tab Content: Entrada de Datos -->
+            <div class="tab-content active" id="input">
+                <form id="seismicForm">
+
+                    <!-- 1. Parámetros del Sitio -->
+                    <section class="card">
+                        <h2 class="section-title">
+                            <span class="number-badge">1</span>
+                            Parámetros del Sitio
+                        </h2>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="zona">Zona Sísmica</label>
+                                <select id="zona" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="I">I (Z=0.15)</option>
+                                    <option value="II">II (Z=0.25)</option>
+                                    <option value="III">III (Z=0.30)</option>
+                                    <option value="IV">IV (Z=0.35)</option>
+                                    <option value="V">V (Z=0.40) - Quito</option>
+                                    <option value="VI">VI (Z≥0.50)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="suelo">Tipo de Suelo</label>
+                                <select id="suelo" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="A">A - Roca muy rígida</option>
+                                    <option value="B">B - Roca</option>
+                                    <option value="C">C - Suelo denso</option>
+                                    <option value="D">D - Suelo blando</option>
+                                    <option value="E">E - Suelo muy blando</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="region">Región Geográfica</label>
+                                <select id="region" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Sierra">Sierra (η=2.48)</option>
+                                    <option value="Costa">Costa (η=1.80)</option>
+                                    <option value="Oriente">Oriente (η=2.60)</option>
+                                    <option value="Galapagos">Galápagos (η=2.48)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 2. Características de la Estructura -->
+                    <section class="card">
+                        <h2 class="section-title">
+                            <span class="number-badge">2</span>
+                            Características de la Estructura
+                        </h2>
+
+                        <div class="form-group">
+                            <label for="nPisos">Número de Pisos</label>
+                            <input type="number" id="nPisos" min="1" max="50" value="3" required>
+                        </div>
+
+                        <div id="floorsContainer" class="floors-container">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+
+                        <button type="button" id="generateFloors" class="btn-secondary">
+                            Generar Campos de Pisos
+                        </button>
+                    </section>
+
+                    <!-- 3. Sistema Estructural -->
+                    <section class="card">
+                        <h2 class="section-title">
+                            <span class="number-badge">3</span>
+                            Sistema Estructural
+                        </h2>
+
+                        <div class="form-group">
+                            <label for="sistema">Tipo de Sistema</label>
+                            <select id="sistema" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="porticos_ha">Hormigón - Pórticos especiales (cu=0.055, α=0.90)</option>
+                                <option value="muros_ha">Hormigón - Muros estructurales (cu=0.048, α=0.90)</option>
+                                <option value="porticos_acero">Acero - Pórticos sin arriostrar (cu=0.072, α=0.80)
+                                </option>
+                                <option value="arriostrado_acero">Acero - Pórticos arriostrados (cu=0.060, α=0.80)
+                                </option>
+                                <option value="mixto">Sistema mixto (cu=0.050, α=0.90)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 4. Factores de Diseño -->
+                    <section class="card">
+                        <h2 class="section-title">
+                            <span class="number-badge">4</span>
+                            Factores de Diseño Sísmico
+                        </h2>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="factorR">Factor R (Ductilidad)</label>
+                                <select id="factorR" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="3">3 - No detallado</option>
+                                    <option value="5">5 - Pórticos ordinarios</option>
+                                    <option value="8">8 - Pórticos especiales</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="factorI">Factor I (Importancia)</label>
+                                <select id="factorI" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1.0">1.0 - Uso normal</option>
+                                    <option value="1.3">1.3 - Público</option>
+                                    <option value="1.5">1.5 - Esencial</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fiP">φP (Irregularidad Planta)</label>
+                                <select id="fiP" required>
+                                    <option value="1.0">1.0 - Regular</option>
+                                    <option value="0.9">0.9 - Irregular</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fiE">φE (Irregularidad Elevación)</label>
+                                <select id="fiE" required>
+                                    <option value="1.0">1.0 - Regular</option>
+                                    <option value="0.9">0.9 - Irregular</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Botones de Acción -->
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-primary">
+                            <span>⚡</span> Calcular
+                        </button>
+                        <button type="button" id="resetBtn" class="btn-secondary">
+                            <span>🔄</span> Limpiar
+                        </button>
+                        <button type="button" id="exampleBtn" class="btn-secondary">
+                            <span>📋</span> Cargar Ejemplo
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab Content: Resultados -->
+            <div class="tab-content" id="results">
+                <div class="card">
+                    <h2 class="section-title">Resumen de Resultados</h2>
+                    <div id="resultsContainer">
+                        <p class="placeholder">Complete los datos y presione "Calcular" para ver los resultados.</p>
+                    </div>
+
+                    <div class="action-buttons" id="exportButtons" style="display:none;">
+                        <button id="exportPDF" class="btn-primary">
+                            <span>📄</span> Exportar PDF
+                        </button>
+                        <button id="exportJSON" class="btn-secondary">
+                            <span>💾</span> Guardar Proyecto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Gráficas -->
+            <div class="tab-content" id="graphs">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="spectrumChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="spectrumChart2"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Distribución de Fuerzas Laterales</h3>
+                    <canvas id="forcesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tab Content: Fórmulas -->
+            <div class="tab-content" id="formulas">
+                <div class="card formulas-card">
+                    <h2 class="section-title">Fórmulas NEC-15</h2>
+
+                    <div class="formula-section">
+                        <h3>1. Espectro de Respuesta Elástico</h3>
+                        <div class="formula-box">
+                            <p><strong>Tramo 1 (T ≤ T₀):</strong></p>
+                            <code>Sa(T) = Z × Fa × [1 + (η - 1) × T/T₀]</code>
+                        </div>
+                        <div class="formula-box">
+                            <p><strong>Tramo 2 (T₀ < T ≤ Tc):</strong>
+                            </p>
+                            <code>Sa(T) = η × Z × Fa</code>
+                        </div>
+                        <div class="formula-box">
+                            <p><strong>Tramo 3 (T > Tc):</strong></p>
+                            <code>Sa(T) = η × Z × Fa × (Tc/T)ʳ</code>
+                        </div>
+                    </div>
+
+                    <div class="formula-section">
+                        <h3>2. Periodos Característicos</h3>
+                        <div class="formula-box">
+                            <code>T₀ = 0.1 × (Fs × Fd) / Fa</code>
+                        </div>
+                        <div class="formula-box">
+                            <code>Tc = 0.55 × (Fs × Fd) / Fa</code>
+                        </div>
+                    </div>
+
+                    <div class="formula-section">
+                        <h3>3. Periodo Fundamental</h3>
+                        <div class="formula-box">
+                            <code>T₁ = cu × hn^α</code>
+                            <p class="formula-note">donde hn es la altura total del edificio</p>
+                        </div>
+                    </div>
+
+                    <div class="formula-section">
+                        <h3>4. Coeficiente Sísmico y Cortante</h3>
+                        <div class="formula-box">
+                            <code>C = Sa(T₁) × (I / R×φP×φE)</code>
+                        </div>
+                        <div class="formula-box">
+                            <code>V = C × W</code>
+                            <p class="formula-note">Verificar: C ≥ 0.16 × Z × I</p>
+                        </div>
+                    </div>
+
+                    <div class="formula-section">
+                        <h3>5. Distribución de Fuerzas</h3>
+                        <div class="formula-box">
+                            <code>Fi = V × (Wi×Hi^k) / Σ(Wj×Hj^k)</code>
+                        </div>
+                        <div class="formula-box">
+                            <p><strong>Exponente k:</strong></p>
+                            <code>
+                                k = 1.0, si T₁ ≤ 0.5<br>
+                                k = 0.75 + 0.5×T₁, si 0.5 < T₁ ≤ 2.5<br>
+                                k = 2.0, si T₁ > 2.5
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Calculadora Sísmica NEC-15 | Norma Ecuatoriana de Construcción</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Ayuda -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ayuda - Calculadora NEC-15</h2>
+            <div class="help-content">
+                <h3>¿Cómo usar la calculadora?</h3>
+                <ol>
+                    <li>Complete todos los parámetros del sitio (Zona, Suelo, Región)</li>
+                    <li>Ingrese el número de pisos y genere los campos</li>
+                    <li>Complete alturas y pesos de cada piso</li>
+                    <li>Seleccione el sistema estructural</li>
+                    <li>Configure los factores de diseño</li>
+                    <li>Presione "Calcular" para obtener resultados</li>
+                    <li>Revise las gráficas y exporte si es necesario</li>
+                </ol>
+
+                <h3>Valor de los Parámetros</h3>
+                <p><strong>Zonas Sísmicas:</strong> Quito está en Zona V (Z=0.40)</p>
+                <p><strong>Tipos de Suelo:</strong> A=Roca muy rígida, E=Suelo muy blando</p>
+                <p><strong>Factor I:</strong> Edificios esenciales (hospitales) usan I=1.5</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/nec15-core.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

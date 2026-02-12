@@ -1,0 +1,117 @@
+# Documentación de la Aplicación NEC15_App
+
+## Introducción
+La aplicación **NEC15_App** es una aplicación web diseñada para [describir el propósito de la aplicación, por ejemplo, "gestionar tareas", "mostrar información", etc.]. Esta documentación describe cómo se desarrolló la aplicación, incluyendo su estructura, tecnologías utilizadas y funcionalidades principales.
+
+---
+
+## Estructura del Proyecto
+El proyecto está organizado de la siguiente manera:
+
+```
+NEC15_App/
+│
+├── GUIA_APK.md
+├── index.html
+├── manifest.json
+├── README.md
+├── sw.js
+├── assets/
+├── css/
+│   └── styles.css
+├── img/
+└── js/
+    ├── app.js
+    └── nec15-core.js
+```
+
+### Descripción de Archivos y Carpetas
+
+- **GUIA_APK.md**: Guía para la instalación o uso de la aplicación.
+- **index.html**: Archivo principal HTML que estructura la interfaz de usuario.
+- **manifest.json**: Archivo de manifiesto para configurar la aplicación como una Progressive Web App (PWA).
+- **README.md**: Archivo de documentación general del proyecto.
+- **sw.js**: Service Worker para habilitar funcionalidades offline y mejorar el rendimiento.
+- **assets/**: Carpeta que contiene recursos adicionales como fuentes o datos.
+- **css/**: Contiene los archivos de estilos CSS.
+  - **styles.css**: Archivo principal de estilos para la aplicación.
+- **img/**: Carpeta que contiene las imágenes utilizadas en la aplicación.
+- **js/**: Contiene los archivos JavaScript.
+  - **app.js**: Archivo principal de lógica de la aplicación.
+  - **nec15-core.js**: Archivo con funcionalidades principales del núcleo de la aplicación.
+
+---
+
+## Tecnologías Utilizadas
+
+La aplicación fue desarrollada utilizando las siguientes tecnologías:
+
+- **HTML5**: Para la estructura del contenido.
+- **CSS3**: Para el diseño y la presentación visual.
+- **JavaScript (ES6)**: Para la lógica y la interactividad de la aplicación.
+- **Service Workers**: Para habilitar funcionalidades offline y mejorar la experiencia del usuario.
+- **PWA (Progressive Web App)**: Para permitir que la aplicación sea instalable y funcione sin conexión.
+
+---
+
+## Funcionalidades Principales
+
+1. **Interfaz de Usuario**:
+   - La aplicación utiliza el archivo `index.html` como base para la estructura de la interfaz.
+   - Los estilos están definidos en `css/styles.css` para garantizar una experiencia de usuario atractiva y responsiva.
+
+2. **Lógica de la Aplicación**:
+   - `app.js` contiene la lógica principal de la aplicación, incluyendo [describir funcionalidades específicas, por ejemplo, "gestión de usuarios", "manejo de eventos", etc.].
+   - `nec15-core.js` incluye funciones reutilizables y componentes esenciales para el funcionamiento de la aplicación.
+
+3. **Service Worker**:
+   - El archivo `sw.js` implementa un Service Worker que permite que la aplicación funcione sin conexión al almacenar en caché los recursos necesarios.
+
+4. **Manifiesto de la Aplicación**:
+   - `manifest.json` define los metadatos de la aplicación, como el nombre, los íconos y la configuración para que sea instalable como PWA.
+
+---
+
+## Proceso de Desarrollo
+
+1. **Planificación**:
+   - Se definieron los objetivos y las funcionalidades principales de la aplicación.
+   - Se diseñó la estructura del proyecto y se seleccionaron las tecnologías a utilizar.
+
+2. **Diseño de la Interfaz**:
+   - Se creó el archivo `index.html` para estructurar la interfaz.
+   - Se diseñaron los estilos en `css/styles.css` para garantizar una experiencia de usuario atractiva.
+
+3. **Implementación de la Lógica**:
+   - Se desarrollaron las funcionalidades principales en `app.js` y `nec15-core.js`.
+   - Se implementaron funciones reutilizables para optimizar el código.
+
+4. **Optimización y Funcionalidades Offline**:
+   - Se configuró el archivo `sw.js` para implementar un Service Worker.
+   - Se creó el archivo `manifest.json` para convertir la aplicación en una PWA.
+
+5. **Pruebas y Depuración**:
+   - Se realizaron pruebas exhaustivas para garantizar el correcto funcionamiento de la aplicación.
+   - Se corrigieron errores y se optimizó el rendimiento.
+
+---
+
+## Instalación y Uso
+
+1. **Clonar el Repositorio**:
+   ```
+   git clone <URL_DEL_REPOSITORIO>
+   ```
+
+2. **Abrir el Proyecto**:
+   - Abrir el archivo `index.html` en un navegador web.
+
+3. **Instalar como PWA**:
+   - Abrir la aplicación en un navegador compatible con PWA (por ejemplo, Google Chrome).
+   - Hacer clic en "Añadir a la pantalla de inicio" para instalar la aplicación.
+
+---
+
+## Conclusión
+
+La aplicación **NEC15_App** fue desarrollada utilizando tecnologías modernas para garantizar una experiencia de usuario óptima y funcionalidades avanzadas como el soporte offline. Este documento proporciona una visión general del proceso de desarrollo y la estructura del proyecto.
